@@ -23,7 +23,8 @@ public class Game implements Controller {
 
 	public Game() {
 
-		//If the number of columns is greater than the number in the alphabet array throw an exception
+		// If the number of columns is greater than the number in the alphabet array
+		// throw an exception
 		if (!(numberOfRows <= alphabet.length)) {
 			throw new IllegalArgumentException(
 					"" + numberOfRows + " is greater than the possible number of columns of " + alphabet.length);
@@ -41,7 +42,8 @@ public class Game implements Controller {
 				letter++;
 			}
 			// If the place has a multiplier put a +
-			if (Arrays.asList(specialCells).contains(alphabet[letter] + ((i % numberOfRows) + 1)) && setSpecialCells == true) {
+			if (Arrays.asList(specialCells).contains(alphabet[letter] + ((i % numberOfRows) + 1))
+					&& setSpecialCells == true) {
 				board.put(alphabet[letter] + ((i % numberOfRows) + 1), '+');
 			} else {
 				// Put the Cells and corresponding values in the HashMap
@@ -55,6 +57,7 @@ public class Game implements Controller {
 
 	/**
 	 * Create a new game and TUI
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -76,10 +79,10 @@ public class Game implements Controller {
 	@Override
 	public String gameState() {
 
-		//Get the start time of the function
+		// Get the start time of the function
 		long startTime = (new Date()).getTime();
 
-		//Create a StringBuffer to append to
+		// Create a StringBuffer to append to
 		StringBuffer sb = new StringBuffer();
 
 		// Row variable to keep track of what row is it on
@@ -93,7 +96,7 @@ public class Game implements Controller {
 				// Add the Letters to the top row
 				sb.append(" " + alphabet[i]);
 			}
-			// Increase the row count 
+			// Increase the row count
 			row++;
 
 		}
@@ -103,21 +106,20 @@ public class Game implements Controller {
 				if (row < 10) {
 					// If the number of rows is less than 10 add an extra space then create a new
 					// row and add the row number
-					sb.append("\n" +  " " + row);
+					sb.append("\n" + " " + row);
 				} else {
 					// Create a new row and add the row number
 					sb.append("\n" + row);
 				}
 				// Increase the row count
-				row++;		
+				row++;
 			}
 			// Put the value of the cell into the StringBuffer
 			sb.append(" " + board.get(alphabet[i % numberOfColumns] + (row - 1)));
 //			System.out.println(alphabet[i % numberOfColumns] + (row - 1));
 		}
-		
-		
-		//Work out the time it takes 
+
+		// Work out the time it takes
 		long endTime = (new Date()).getTime();
 		long time = endTime - startTime;
 		System.out.println("Time: " + endTime + " - " + startTime + " = " + time + "ms");
@@ -128,8 +130,21 @@ public class Game implements Controller {
 
 	@Override
 	public String play(Play play) {
-		// TODO Auto-generated method stub
-		return null;
+		int startingLetter = Arrays.asList(alphabet).indexOf("" + play.cell().charAt(0));
+		System.out.println(startingLetter);
+		int cellNumber = Integer.parseInt(play.cell().substring(1));
+		Direction dir = play.dir();
+		char[] letterPositions = play.letterPositionsInRack().toCharArray();
+		for (char c : letterPositions) {
+			if (dir == Direction.DOWN) { // c currently doesn't do shit 
+				board.replace("" + alphabet[startingLetter] + cellNumber, c); 
+				cellNumber++;
+			} else {
+				board.replace("" + alphabet[startingLetter] + cellNumber, c);
+				startingLetter++;
+			}
+		}
+		return gameState();
 	}
 
 	@Override
