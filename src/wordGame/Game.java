@@ -45,11 +45,10 @@ public class Game implements Controller {
 		char[] letterPositions = play.letterPositionsInRack().toCharArray();
 
 		for (char c : letterPositions) {
-			if (dir == Direction.DOWN) { // c currently doesn't do shit
-				board.replace(startingLetter, cellNumber, c);
+			board.replace(startingLetter, cellNumber, c); // c currently doesn't do shit
+			if (dir == Direction.DOWN) { 
 				cellNumber++;
 			} else {
-				board.replace(startingLetter, cellNumber, c);
 				startingLetter++;
 			}
 		}
