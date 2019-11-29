@@ -97,4 +97,11 @@ public class Rack {
 		letters[i - 1] = ' ';
 		return c;
 	}
+	
+	public char pull(int i) {
+		//Set char c to be an array of letters -1
+		char c = letters[i - 1];
+
+		return c;
+	}
 }

@@ -120,5 +120,28 @@ public class Board {
 		// Return the int of the array that contains the character
 		return Arrays.asList(alphabet).indexOf("" + c);
 	}
+	
+	public String getLetter(int i) {
+		// Return the letter of the int location
+		return alphabet[i];
+	}
+	
+	public char getCellValue(String cell) {
+		return boardMap.get(cell);
+	}
+
+	public Boolean checkIfInBoard(int startingLetter, int cellNumber, Direction dir) {
+
+		if (dir == Direction.DOWN) {
+			if ((cellNumber) > 0 && (cellNumber) < numberOfRows) {
+				return true;
+			}
+		} else {
+			if ((startingLetter) > -1 && (startingLetter) < numberOfColumns) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 }
