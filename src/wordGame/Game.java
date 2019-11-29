@@ -3,9 +3,11 @@ package wordGame;
 public class Game implements Controller {
 
 	Board board;
+	Rack rack;
 
 	public Game() {
 		board = Board.getBoard();
+		rack = Rack.getRack();
 	}
 
 	/**
@@ -22,10 +24,12 @@ public class Game implements Controller {
 
 	@Override
 	public String refillRack() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		
+		rack.refill();
+		
+		return rack.toString();
 
+	}
 	/**
 	 * Create a string format of the board
 	 */
@@ -45,7 +49,7 @@ public class Game implements Controller {
 		char[] letterPositions = play.letterPositionsInRack().toCharArray();
 
 		for (char c : letterPositions) {
-			board.replace(startingLetter, cellNumber, c); // c currently doesn't do shit
+			board.replace(startingLetter, cellNumber, rack.pop(Integer.parseInt("" + c))); // c currently doesn't do shit
 			if (dir == Direction.DOWN) { 
 				cellNumber++;
 			} else {
