@@ -24,12 +24,13 @@ public class Game implements Controller {
 
 	@Override
 	public String refillRack() {
-		
+
 		rack.refill();
-		
+
 		return rack.toString();
 
 	}
+
 	/**
 	 * Create a string format of the board
 	 */
@@ -38,19 +39,26 @@ public class Game implements Controller {
 		return board.toString();
 	}
 
+	/*
+	 * Play method that creates a starting letter, cell number and direction and
+	 * changes the letter position to a new position
+	 * 
+	 */
 	@Override
 	public String play(Play play) {
+		// Gets the starting letter index
 		int startingLetter = board.getLetterIndex(play.cell().charAt(0));
-
+		// gets the cell number
 		int cellNumber = Integer.parseInt(play.cell().substring(1));
-
+		// creates a new direction
 		Direction dir = play.dir();
-
+		// creates a char[] array of letter positions
 		char[] letterPositions = play.letterPositionsInRack().toCharArray();
-
+		// increments the cell number and the starting letter after
+		// checking the letter position
 		for (char c : letterPositions) {
-			board.replace(startingLetter, cellNumber, rack.pop(Integer.parseInt("" + c))); // c currently doesn't do shit
-			if (dir == Direction.DOWN) { 
+			board.replace(startingLetter, cellNumber, rack.pop(Integer.parseInt("" + c)));
+			if (dir == Direction.DOWN) {
 				cellNumber++;
 			} else {
 				startingLetter++;
