@@ -1,5 +1,7 @@
 package wordGame;
 
+import java.util.ArrayList;
+
 /**
  * A board holding the values for the game.
  * 
@@ -9,6 +11,7 @@ package wordGame;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Board {
@@ -142,6 +145,44 @@ public class Board {
 			}
 		}
 		return false;
+	}
+	
+	public List<String> checkSurroundingCells(int startingLetter, int cellNumber, Direction dir) {
+		
+		List<String> letters = new ArrayList<String>();
+		
+		int holdStartingLetter = startingLetter;
+		
+		if (dir == Direction.DOWN) {
+			for (; board.checkIfInBoard(startingLetter, cellNumber, dir); cellNumber--) {
+				if (getCellValue("" + getLetter(startingLetter) + cellNumber) != '.'
+						&& getCellValue("" + getLetter(startingLetter) + cellNumber) != '+') {
+					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
+				}
+			}
+			for (; checkIfInBoard(startingLetter, cellNumber, dir); cellNumber++) {
+				if (getCellValue("" + getLetter(startingLetter) + cellNumber) != '.'
+						&& getCellValue("" + getLetter(startingLetter) + cellNumber) != '+') {
+					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
+				}
+			}
+		} else {
+			for (; checkIfInBoard(startingLetter, cellNumber, dir); startingLetter++) {
+				if (getCellValue("" + getLetter(startingLetter) + cellNumber) != '.'
+						&& getCellValue("" + getLetter(startingLetter) + cellNumber) != '+') {
+					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
+				}
+			}
+			startingLetter = holdStartingLetter;
+			for (; board.checkIfInBoard(startingLetter, cellNumber, dir); startingLetter--) {
+				if (getCellValue("" + getLetter(startingLetter) + cellNumber) != '.'
+						&& getCellValue("" + getLetter(startingLetter) + cellNumber) != '+') {
+					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
+				}
+			}
+		}
+		
+		return letters;
 	}
 
 }

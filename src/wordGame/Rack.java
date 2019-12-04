@@ -28,15 +28,15 @@ public class Rack {
 	 * Constructor for a rack object
 	 */
 	private Rack() {
-		//Declare character array of size 5 to hold letters
+		// Declare character array of size 5 to hold letters
 		letters = new char[rackSize];
 
-		//Iterate over rackSize
+		// Iterate over rackSize
 		for (int i = 0; i < rackSize; i++) {
 			letters[i] = ' ';
 		}
 
-		//Refill rack
+		// Refill rack
 		refill();
 	}
 
@@ -59,20 +59,31 @@ public class Rack {
 
 		Random rand = new Random();
 
-		//Iterate over rackSize
+		// Iterate over rackSize
 		for (int i = 0; i < rackSize; i++) {
 
-			//If letter index is empty generate a random letter and fill the empty position
+			// If letter index is empty generate a random letter and fill the empty position
 			if (letters[i] == ' ') {
-
-				// Refill empty index with randomly generated letter
 				letters[i] = alphabet[rand.nextInt(alphabet.length)].charAt(0);
 			}
 		}
 	}
 
+	public void setRack(String rackLetters) {
+
+		String[] rl = rackLetters.split("");
+
+		if (letters.length > 5) {
+			throw new IllegalArgumentException("Inputted number of letters is greater than max letter amount of 5");
+		} else {
+			for (int i = 0; i < letters.length; i++) {
+				letters[i] = rl[i].charAt(0);
+			}
+		}
+	}
+
 	/**
-	 *Return a string representation of the rack
+	 * Return a string representation of the rack
 	 */
 	public String toString() {
 		// Create a StringBuffer to append to
@@ -90,18 +101,28 @@ public class Rack {
 	 * Method to remove letter from rack when it`s been placed on board
 	 */
 	public char pop(int i) {
-		//Set char c to be an array of letters -1
+		// Set char c to be an array of letters -1
 		char c = letters[i - 1];
 
-		//Array of i-1 letters set to be empty
+		// Array of i-1 letters set to be empty
 		letters[i - 1] = ' ';
 		return c;
 	}
-	
+
 	public char pull(int i) {
-		//Set char c to be an array of letters -1
+		// Set char c to be an array of letters -1
 		char c = letters[i - 1];
 
 		return c;
+	}
+
+	public int getIndex(String s) {
+
+		for (int i = 0; i < letters.length; i++) {
+			if (s.charAt(0) == letters[i]) {
+				return i;
+			}
+		}
+		return -1;
 	}
 }

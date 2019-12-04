@@ -1,11 +1,7 @@
 package wordGame;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Game implements Controller {
@@ -18,8 +14,8 @@ public class Game implements Controller {
 	public Game() {
 		board = Board.getBoard();
 		rack = Rack.getRack();
-		words = new ArrayList<String>(70000);
-		getWords();
+		new FileIO();
+		words = FileIO.getWords();
 	}
 
 	/**
@@ -44,7 +40,7 @@ public class Game implements Controller {
 	}
 
 	/**
-	 * Create a string format of the board
+	 * Returns a string version of the board
 	 */
 	@Override
 	public String gameState() {
@@ -103,81 +99,110 @@ public class Game implements Controller {
 	 */
 	@Override
 	public String checkValidity(Play play) {
+		
+		checkForWordsOnBoard("HELLO", play);
+
+		List<String> letters = getConnectingLetters(play);
+
+		List<String> possibleWords = new ArrayList<String>();
+
+		for (String w : words) {
+
+			String[] wordStringArray = w.toUpperCase().split("");
+
+			ArrayList<String> word = new ArrayList<String>(Arrays.asList(wordStringArray));
+
+			if (word.containsAll(letters) && word.size() == letters.size()) {
+				for (String l : letters) {
+					word.remove(l);
+				}
+				if (word.size() == 0) {
+					possibleWords.add(w.toUpperCase());
+				}
+
+			}
+		}
+
+		if (possibleWords.isEmpty()) {
+			return "INVALID FOR LETTERS:" + letters.toString().replace('[', ' ').replace(']', ' ');
+		}
+
+		return "VALID WORDS:" + possibleWords.toString().replace('[', ' ').replace(']', ' ');
+
+	}
+
+	private List<String> getConnectingLetters(Play play) {
 
 		String cellLocation = play.cell();
 		// Gets the starting letter index
 		int startingLetter = board.getLetterIndex(cellLocation.charAt(0));
-		System.out.println(startingLetter);
 		// gets the cell number
 		int cellNumber = Integer.parseInt(cellLocation.substring(1));
 		// creates a new direction
 		Direction dir = play.dir();
-		// creates a char[] array of letter positions
+		// creates a char[] array of letter
 		char[] letterPositions = play.letterPositionsInRack().toCharArray();
 
 		List<String> letters = new ArrayList<String>();
 
-		if (dir == Direction.DOWN) {
-			for (; board.checkIfInBoard(startingLetter, cellNumber, dir); cellNumber--) {
-				if (board.getCellValue("" + board.getLetter(startingLetter) + cellNumber) != '.' && board.getCellValue("" + board.getLetter(startingLetter) + cellNumber) != '+') {
-					letters.add("" + board.getCellValue("" + board.getLetter(startingLetter) + cellNumber));
-				}
-			}
-		} else {
-			for (; board.checkIfInBoard(startingLetter, cellNumber, dir); startingLetter++) {
-				if (board.getCellValue("" + board.getLetter(startingLetter) + cellNumber) != '.' && board.getCellValue("" + board.getLetter(startingLetter) + cellNumber) != '+') {
-					letters.add("" + board.getCellValue("" + board.getLetter(startingLetter) + cellNumber));
-				}
-			}
-		}
+		letters = board.checkSurroundingCells(startingLetter, cellNumber, dir);
 
 		for (char c : letterPositions) {
 			letters.add("" + rack.pull(Integer.parseInt("" + c)));
 		}
 
-		System.out.println(letters.toString());
-
-		int test = 0;
-
-		for (String s : words) {
-			for (String l : letters) {
-				if (s.length() != letters.size()) {
-				}
-				if (s.contains(l)) {
-					test++;
-				} else {
-				}
-			}
-			if (test == letters.size()) {
-				System.out.println(s);
-			}
-			test = 0;
-		}
-
-		return board.toString();
+		return letters;
 
 	}
 
-	private void getWords() {
 
-		File file = new File("wordList.txt");
+	private Boolean checkForWordsOnBoard(String word, Play play) {
 
-		BufferedReader br;
-		try {
-			br = new BufferedReader(new FileReader(file));
-			String st;
-			try {
-				while ((st = br.readLine()) != null) {
-					words.add(st);
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		String cellLocation = play.cell();
+		// Gets the starting letter index
+		int startingLetter = board.getLetterIndex(cellLocation.charAt(0));
+		// gets the cell number
+		int cellNumber = Integer.parseInt(cellLocation.substring(1));
+		// creates a new direction
+		Direction dir = play.dir();
+
+		Direction direction = null;
+
+		String[] letters = word.split("");
+
+		String posInRack = "";
+
+		for (String s : letters) {
+			posInRack = posInRack + rack.getIndex(s);
 		}
+
+		play(new Play(cellLocation, dir.toString(), posInRack));
+		
+		System.out.println(gameState());
+
+		switch (dir) {
+		case DOWN:
+			direction = Direction.ACROSS;
+			break;
+		case ACROSS:
+			direction = Direction.DOWN;
+			break;
+		}
+
+		if (dir == Direction.DOWN) {
+			for (int i = 0; i < word.length(); i++) {
+				if(board.checkSurroundingCells(startingLetter, cellNumber - i, direction).isEmpty()) {
+					return false;
+				};
+			}
+		} else {
+			for (int i = 0; i < word.length(); i++) {
+				board.checkSurroundingCells(startingLetter - i, cellNumber, direction);
+			}
+		}
+
+
+		return false;
 	}
 
 }
