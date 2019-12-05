@@ -3,6 +3,7 @@
  */
 package wordGame;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -102,10 +103,10 @@ public class Rack {
 	 */
 	public char pop(int i) {
 		// Set char c to be an array of letters -1
-		char c = letters[i - 1];
+		char c = letters[i];
 
 		// Array of i-1 letters set to be empty
-		letters[i - 1] = ' ';
+		letters[i] = ' ';
 		return c;
 	}
 
@@ -116,13 +117,17 @@ public class Rack {
 		return c;
 	}
 
-	public int getIndex(String s) {
-
-		for (int i = 0; i < letters.length; i++) {
-			if (s.charAt(0) == letters[i]) {
-				return i;
+	public ArrayList<Integer> getLettersIndex(String[] letters) {
+		
+		ArrayList<Integer> letterIndex = new ArrayList<Integer>();
+		
+		for (String s : letters) {
+			for (int i = 0; i < letters.length; i++) {
+				if (s == letters[i] && !(letterIndex.contains(i))) {
+					letterIndex.add(i);
+				}
 			}
 		}
-		return -1;
+		return letterIndex;
 	}
 }

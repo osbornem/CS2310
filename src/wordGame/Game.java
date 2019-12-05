@@ -100,7 +100,7 @@ public class Game implements Controller {
 	@Override
 	public String checkValidity(Play play) {
 		
-		checkForWordsOnBoard("HELLO", play);
+		//checkForWordsOnBoard("HELLO", play);
 
 		List<String> letters = getConnectingLetters(play);
 
@@ -172,8 +172,10 @@ public class Game implements Controller {
 
 		String posInRack = "";
 
-		for (String s : letters) {
-			posInRack = posInRack + rack.getIndex(s);
+		ArrayList<Integer> letterIndexs = rack.getLettersIndex(letters);
+		
+		for(int i : letterIndexs) {
+			posInRack += i;
 		}
 
 		play(new Play(cellLocation, dir.toString(), posInRack));
