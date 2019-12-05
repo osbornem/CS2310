@@ -119,16 +119,26 @@ public class Board {
 		boardMap.replace("" + alphabet[letter] + cellNumber, value);
 	}
 
+	public void resetCell(int letter, int cellNumber) {
+		if (Arrays.asList(specialCells).contains(alphabet[letter] + cellNumber) && setSpecialCells == true) {
+			boardMap.put(alphabet[letter] + cellNumber, '+');
+		} else {
+			// Put the Cells and corresponding values in the HashMap
+			boardMap.put(alphabet[letter] + cellNumber, '.');
+		}
+//				
+	}
+
 	public int getLetterIndex(char c) {
 		// Return the int of the array that contains the character
 		return Arrays.asList(alphabet).indexOf("" + c);
 	}
-	
+
 	public String getLetter(int i) {
 		// Return the letter of the int location
 		return alphabet[i];
 	}
-	
+
 	public char getCellValue(String cell) {
 		return boardMap.get(cell);
 	}
@@ -146,13 +156,13 @@ public class Board {
 		}
 		return false;
 	}
-	
+
 	public List<String> checkSurroundingCells(int startingLetter, int cellNumber, Direction dir) {
-		
+
 		List<String> letters = new ArrayList<String>();
-		
+
 		int holdStartingLetter = startingLetter;
-		
+
 		if (dir == Direction.DOWN) {
 			for (; board.checkIfInBoard(startingLetter, cellNumber, dir); cellNumber--) {
 				if (getCellValue("" + getLetter(startingLetter) + cellNumber) != '.'
@@ -181,7 +191,7 @@ public class Board {
 				}
 			}
 		}
-		
+
 		return letters;
 	}
 
