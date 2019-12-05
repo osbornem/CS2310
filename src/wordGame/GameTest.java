@@ -38,6 +38,9 @@ public class GameTest {
 		r.setRack("HELLO");
 		Assert.assertEquals("VALID WORDS: HELLO ", g.checkValidity(new Play("B1", "ACROSS", "12345")));
 		Assert.assertEquals("VALID WORDS: HELLO ", g.checkValidity(new Play("B1", "DOWN", "12345")));
+		r.setRack("HELOA");
+		Assert.assertNotEquals("VALID WORDS: HELLO ", g.checkValidity(new Play("B1", "DOWN", "12345")));
+		Assert.assertEquals("INVALID FOR LETTERS: H, E, L, O, A ", g.checkValidity(new Play("B1", "DOWN", "12345")));
 	}
 	
 	@Test

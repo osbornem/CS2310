@@ -103,10 +103,10 @@ public class Rack {
 	 */
 	public char pop(int i) {
 		// Set char c to be an array of letters -1
-		char c = letters[i];
+		char c = letters[i - 1];
 
 		// Array of i-1 letters set to be empty
-		letters[i] = ' ';
+		letters[i - 1] = ' ';
 		return c;
 	}
 

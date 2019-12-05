@@ -175,7 +175,7 @@ public class Game implements Controller {
 		ArrayList<Integer> letterIndexs = rack.getLettersIndex(letters);
 		
 		for(int i : letterIndexs) {
-			posInRack += i;
+			posInRack += (i+1);
 		}
 
 		play(new Play(cellLocation, dir.toString(), posInRack));
