@@ -50,7 +50,8 @@ public class GameTest {
 		g.play(new Play("B1", "ACROSS", "12"));
 		Assert.assertEquals("VALID WORDS: HELLO ", g.checkValidity(new Play("D1", "ACROSS", "345")));
 		g.play(new Play("D1", "ACROSS", "345"));
-		Assert.assertEquals("INVALID FOR WORD: HELLO CLASHES WITH ANOTHER WORD ON BOARD", g.checkValidity(new Play("B1", "ACROSS", "12345")));
+		r.setRack("HELLO");
+		Assert.assertEquals("INVALID FOR WORD: HELLO CLASHES WITH ANOTHER WORD ON BOARD", g.checkValidity(new Play("B2", "ACROSS", "12345")));
 		
 	}
 

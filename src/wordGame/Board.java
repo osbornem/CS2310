@@ -162,31 +162,45 @@ public class Board {
 		List<String> letters = new ArrayList<String>();
 
 		int holdStartingLetter = startingLetter;
+		int holdCellNumber = cellNumber;
 
 		if (dir == Direction.DOWN) {
+			cellNumber--;
 			for (; board.checkIfInBoard(startingLetter, cellNumber, dir); cellNumber--) {
-				if (getCellValue("" + getLetter(startingLetter) + cellNumber) != '.'
-						&& getCellValue("" + getLetter(startingLetter) + cellNumber) != '+') {
+				if (getCellValue("" + getLetter(startingLetter) + cellNumber) == '.'
+						|| getCellValue("" + getLetter(startingLetter) + cellNumber) == '+') {
+					break; 
+				} else {
 					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
 				}
 			}
+			cellNumber = holdCellNumber;
+			cellNumber++;
 			for (; checkIfInBoard(startingLetter, cellNumber, dir); cellNumber++) {
-				if (getCellValue("" + getLetter(startingLetter) + cellNumber) != '.'
-						&& getCellValue("" + getLetter(startingLetter) + cellNumber) != '+') {
+				if (getCellValue("" + getLetter(startingLetter) + cellNumber) == '.'
+						|| getCellValue("" + getLetter(startingLetter) + cellNumber) == '+') {
+					break; 
+				} else {
 					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
 				}
 			}
 		} else {
+			startingLetter++;
 			for (; checkIfInBoard(startingLetter, cellNumber, dir); startingLetter++) {
-				if (getCellValue("" + getLetter(startingLetter) + cellNumber) != '.'
-						&& getCellValue("" + getLetter(startingLetter) + cellNumber) != '+') {
+				if (getCellValue("" + getLetter(startingLetter) + cellNumber) == '.'
+						|| getCellValue("" + getLetter(startingLetter) + cellNumber) == '+') {
+					break; 
+				} else {
 					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
 				}
 			}
 			startingLetter = holdStartingLetter;
+			startingLetter--;
 			for (; board.checkIfInBoard(startingLetter, cellNumber, dir); startingLetter--) {
-				if (getCellValue("" + getLetter(startingLetter) + cellNumber) != '.'
-						&& getCellValue("" + getLetter(startingLetter) + cellNumber) != '+') {
+				if (getCellValue("" + getLetter(startingLetter) + cellNumber) == '.'
+						|| getCellValue("" + getLetter(startingLetter) + cellNumber) == '+') {
+					break; 
+				} else {
 					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
 				}
 			}

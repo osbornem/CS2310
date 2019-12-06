@@ -6,8 +6,8 @@ import java.util.List;
 
 public class Game implements Controller {
 
-	Board board;
-	Rack rack;
+	protected Board board;
+	protected Rack rack;
 
 	ArrayList<String> words;
 
@@ -65,14 +65,20 @@ public class Game implements Controller {
 		// increments the cell number and the starting letter after
 		// checking the letter position
 
-		for (char c : letterPositions) {
-			board.replace(startingLetter, cellNumber, rack.pop(Integer.parseInt("" + c)));
-			if (dir == Direction.DOWN) {
-				cellNumber++;
-			} else {
-				startingLetter++;
+		if (!checkValidity(play).contains("INVALID")) {
+
+			for (char c : letterPositions) {
+				board.replace(startingLetter, cellNumber, rack.pop(Integer.parseInt("" + c)));
+				if (dir == Direction.DOWN) {
+					cellNumber++;
+				} else {
+					startingLetter++;
+				}
 			}
+		} else {
+			return checkValidity(play);
 		}
+
 		return gameState();
 	}
 
@@ -101,19 +107,17 @@ public class Game implements Controller {
 	@Override
 	public String checkValidity(Play play) {
 
-		// checkForWordsOnBoard("HELLO", play);
-
 		List<String> letters = getConnectingLetters(play);
 
 		List<String> possibleWords = checkPossibleWords(letters);
 
-//		for (String word : possibleWords) {
-//			if (!checkForWordsOnBoard(word, play)) {
-//				return "INVALID FOR WORD:" + word.replace('[', ' ').replace(']', ' ')
-//						+ "CLASHES WITH ANOTHER WORD ON BOARD";
-//			}
-//		}
-		
+		for (String word : possibleWords) {
+			if (!checkIfWordIsValid(word, play)) {
+				return "INVALID FOR WORD: " + word.replace('[', ' ').replace(']', ' ')
+						+ " CLASHES WITH ANOTHER WORD ON BOARD";
+			}
+		}
+
 		if (possibleWords.isEmpty()) {
 			return "INVALID FOR LETTERS:" + letters.toString().replace('[', ' ').replace(']', ' ');
 		}
@@ -153,7 +157,7 @@ public class Game implements Controller {
 		int startingLetter = board.getLetterIndex(cellLocation.charAt(0));
 		// gets the cell number
 		int cellNumber = Integer.parseInt(cellLocation.substring(1));
-		// creates a new direction
+		// Gets the direction
 		Direction dir = play.dir();
 
 		List<String> letters = new ArrayList<String>();
@@ -171,5 +175,43 @@ public class Game implements Controller {
 		return letters;
 	}
 
+	private Boolean checkIfWordIsValid(String word, Play play) {
+
+		// Gets the direction
+		Direction dir = play.dir();
+		// The opposite of dir
+		Direction notDir;
+		// The starting cell
+		String cellLocation = play.cell();
+		// Gets the starting letter index
+		int startingLetter = board.getLetterIndex(cellLocation.charAt(0));
+		// gets the cell number
+		int cellNumber = Integer.parseInt(cellLocation.substring(1));
+
+		List<String> letters;
+
+		if (dir == Direction.DOWN) {
+			notDir = Direction.ACROSS;
+		} else {
+			notDir = Direction.DOWN;
+		}
+
+		for (int i = 0; i < word.length(); i++) {
+			if (dir == Direction.DOWN) {
+				letters = board.checkSurroundingCells(startingLetter, cellNumber + i, notDir);
+			} else {
+				letters = board.checkSurroundingCells(startingLetter + i, cellNumber, notDir);
+			}
+
+			letters.add("" + word.charAt(i));
+
+			if (checkPossibleWords(letters).isEmpty() && letters.size() > 1) {
+				return false;
+			}
+
+		}
+
+		return true;
+	}
 
 }
