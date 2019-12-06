@@ -45,6 +45,10 @@ public class Play {
 		return dir;
 	}
 	
+	public void setDirection(Direction dir) {
+		this.dir = dir;
+	}
+	
 	public String letterPositionsInRack() {
 		return letterPositionsInRack;
 	}

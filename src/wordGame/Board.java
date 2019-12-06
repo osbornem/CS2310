@@ -1,5 +1,7 @@
 package wordGame;
 
+import java.util.ArrayList;
+
 /**
  * A board holding the values for the game.
  * 
@@ -9,6 +11,7 @@ package wordGame;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Board {
@@ -116,9 +119,94 @@ public class Board {
 		boardMap.replace("" + alphabet[letter] + cellNumber, value);
 	}
 
+	public void resetCell(int letter, int cellNumber) {
+		if (Arrays.asList(specialCells).contains(alphabet[letter] + cellNumber) && setSpecialCells == true) {
+			boardMap.put(alphabet[letter] + cellNumber, '+');
+		} else {
+			// Put the Cells and corresponding values in the HashMap
+			boardMap.put(alphabet[letter] + cellNumber, '.');
+		}
+//				
+	}
+
 	public int getLetterIndex(char c) {
 		// Return the int of the array that contains the character
 		return Arrays.asList(alphabet).indexOf("" + c);
+	}
+
+	public String getLetter(int i) {
+		// Return the letter of the int location
+		return alphabet[i];
+	}
+
+	public char getCellValue(String cell) {
+		return boardMap.get(cell);
+	}
+
+	public Boolean checkIfInBoard(int startingLetter, int cellNumber, Direction dir) {
+
+		if (dir == Direction.DOWN) {
+			if ((cellNumber) > 0 && (cellNumber) < numberOfRows) {
+				return true;
+			}
+		} else {
+			if ((startingLetter) > -1 && (startingLetter) < numberOfColumns) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public List<String> checkSurroundingCells(int startingLetter, int cellNumber, Direction dir) {
+
+		List<String> letters = new ArrayList<String>();
+
+		int holdStartingLetter = startingLetter;
+		int holdCellNumber = cellNumber;
+
+		if (dir == Direction.DOWN) {
+			cellNumber--;
+			for (; board.checkIfInBoard(startingLetter, cellNumber, dir); cellNumber--) {
+				if (getCellValue("" + getLetter(startingLetter) + cellNumber) == '.'
+						|| getCellValue("" + getLetter(startingLetter) + cellNumber) == '+') {
+					break; 
+				} else {
+					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
+				}
+			}
+			cellNumber = holdCellNumber;
+			cellNumber++;
+			for (; checkIfInBoard(startingLetter, cellNumber, dir); cellNumber++) {
+				if (getCellValue("" + getLetter(startingLetter) + cellNumber) == '.'
+						|| getCellValue("" + getLetter(startingLetter) + cellNumber) == '+') {
+					break; 
+				} else {
+					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
+				}
+			}
+		} else {
+			startingLetter++;
+			for (; checkIfInBoard(startingLetter, cellNumber, dir); startingLetter++) {
+				if (getCellValue("" + getLetter(startingLetter) + cellNumber) == '.'
+						|| getCellValue("" + getLetter(startingLetter) + cellNumber) == '+') {
+					break; 
+				} else {
+					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
+				}
+			}
+			startingLetter = holdStartingLetter;
+			startingLetter--;
+			for (; board.checkIfInBoard(startingLetter, cellNumber, dir); startingLetter--) {
+				if (getCellValue("" + getLetter(startingLetter) + cellNumber) == '.'
+						|| getCellValue("" + getLetter(startingLetter) + cellNumber) == '+') {
+					break; 
+				} else {
+					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
+				}
+			}
+		}
+
+		return letters;
 	}
 
 }

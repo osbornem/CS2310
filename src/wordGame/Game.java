@@ -1,11 +1,21 @@
 package wordGame;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Game implements Controller {
 
-	Board board;
+	protected Board board;
+	protected Rack rack;
+
+	ArrayList<String> words;
 
 	public Game() {
 		board = Board.getBoard();
+		rack = Rack.getRack();
+		new FileIO();
+		words = FileIO.getWords();
 	}
 
 	/**
@@ -22,36 +32,53 @@ public class Game implements Controller {
 
 	@Override
 	public String refillRack() {
-		// TODO Auto-generated method stub
-		return null;
+
+		rack.refill();
+
+		return rack.toString();
+
 	}
 
 	/**
-	 * Create a string format of the board
+	 * Returns a string version of the board
 	 */
 	@Override
 	public String gameState() {
 		return board.toString();
 	}
 
+	/*
+	 * Play method that creates a starting letter, cell number and direction and
+	 * changes the letter position to a new position
+	 * 
+	 */
 	@Override
 	public String play(Play play) {
+		// Gets the starting letter index
 		int startingLetter = board.getLetterIndex(play.cell().charAt(0));
-
+		// gets the cell number
 		int cellNumber = Integer.parseInt(play.cell().substring(1));
-
+		// creates a new direction
 		Direction dir = play.dir();
-
+		// creates a char[] array of letter positions
 		char[] letterPositions = play.letterPositionsInRack().toCharArray();
+		// increments the cell number and the starting letter after
+		// checking the letter position
 
-		for (char c : letterPositions) {
-			board.replace(startingLetter, cellNumber, c); // c currently doesn't do shit
-			if (dir == Direction.DOWN) { 
-				cellNumber++;
-			} else {
-				startingLetter++;
+		if (!checkValidity(play).contains("INVALID")) {
+
+			for (char c : letterPositions) {
+				board.replace(startingLetter, cellNumber, rack.pop(Integer.parseInt("" + c)));
+				if (dir == Direction.DOWN) {
+					cellNumber++;
+				} else {
+					startingLetter++;
+				}
 			}
+		} else {
+			return checkValidity(play);
 		}
+
 		return gameState();
 	}
 
@@ -61,10 +88,130 @@ public class Game implements Controller {
 		return null;
 	}
 
+	/**
+	 * Check the validity of a specified play (i.e. move). Display a message stating
+	 * "Valid" or "Invalid" after the check. With a valid play, all new English
+	 * words introduced to the game board will be displayed. With an invalid play,
+	 * the invalid letter sequence introduced to the game board will also be
+	 * returned.
+	 * 
+	 * @param play information about where to place which tile in the form of
+	 *             STARTING_CELL; DIRECTION; LETTER_POSITIONS_IN_RACK, e.g. B3,
+	 *             DOWN, 513
+	 * 
+	 * @return a message stating "Valid" or "Invalid". With a valid play, the game
+	 *         engine will also display all new English words introduced to the game
+	 *         board. With an invalid play, the game engine will also display the
+	 *         invalid letter sequence introduced to the game board.
+	 */
 	@Override
 	public String checkValidity(Play play) {
-		// TODO Auto-generated method stub
-		return null;
+
+		List<String> letters = getConnectingLetters(play);
+
+		List<String> possibleWords = checkPossibleWords(letters);
+
+		for (String word : possibleWords) {
+			if (!checkIfWordIsValid(word, play)) {
+				return "INVALID FOR WORD: " + word.replace('[', ' ').replace(']', ' ')
+						+ " CLASHES WITH ANOTHER WORD ON BOARD";
+			}
+		}
+
+		if (possibleWords.isEmpty()) {
+			return "INVALID FOR LETTERS:" + letters.toString().replace('[', ' ').replace(']', ' ');
+		}
+
+		return "VALID WORDS:" + possibleWords.toString().replace('[', ' ').replace(']', ' ');
+
+	}
+
+	private List<String> checkPossibleWords(List<String> letters) {
+		List<String> possibleWords = new ArrayList<String>();
+
+		for (String w : words) {
+
+			String[] wordStringArray = w.toUpperCase().split("");
+
+			ArrayList<String> word = new ArrayList<String>(Arrays.asList(wordStringArray));
+
+			if (letters.size() > 1) {
+				if (word.containsAll(letters) && word.size() == letters.size()) {
+					for (String l : letters) {
+						word.remove(l);
+					}
+					if (word.size() == 0) {
+						possibleWords.add(w.toUpperCase());
+					}
+
+				}
+			}
+		}
+		return possibleWords;
+	}
+
+	private List<String> getConnectingLetters(Play play) {
+
+		String cellLocation = play.cell();
+		// Gets the starting letter index
+		int startingLetter = board.getLetterIndex(cellLocation.charAt(0));
+		// gets the cell number
+		int cellNumber = Integer.parseInt(cellLocation.substring(1));
+		// Gets the direction
+		Direction dir = play.dir();
+
+		List<String> letters = new ArrayList<String>();
+
+		letters = board.checkSurroundingCells(startingLetter, cellNumber, dir);
+
+		if (play.letterPositionsInRack() != null) {
+			// creates a char[] array of letter
+			char[] letterPositions = play.letterPositionsInRack().toCharArray();
+
+			for (char c : letterPositions) {
+				letters.add("" + rack.pull(Integer.parseInt("" + c)));
+			}
+		}
+		return letters;
+	}
+
+	private Boolean checkIfWordIsValid(String word, Play play) {
+
+		// Gets the direction
+		Direction dir = play.dir();
+		// The opposite of dir
+		Direction notDir;
+		// The starting cell
+		String cellLocation = play.cell();
+		// Gets the starting letter index
+		int startingLetter = board.getLetterIndex(cellLocation.charAt(0));
+		// gets the cell number
+		int cellNumber = Integer.parseInt(cellLocation.substring(1));
+
+		List<String> letters;
+
+		if (dir == Direction.DOWN) {
+			notDir = Direction.ACROSS;
+		} else {
+			notDir = Direction.DOWN;
+		}
+
+		for (int i = 0; i < word.length(); i++) {
+			if (dir == Direction.DOWN) {
+				letters = board.checkSurroundingCells(startingLetter, cellNumber + i, notDir);
+			} else {
+				letters = board.checkSurroundingCells(startingLetter + i, cellNumber, notDir);
+			}
+
+			letters.add("" + word.charAt(i));
+
+			if (checkPossibleWords(letters).isEmpty() && letters.size() > 1) {
+				return false;
+			}
+
+		}
+
+		return true;
 	}
 
 }
