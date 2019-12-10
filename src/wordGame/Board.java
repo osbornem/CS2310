@@ -71,7 +71,17 @@ public class Board {
 		}
 		return board;
 	}
+	
+	public static void clearBoard() {
+		board = null;
+	}
+	
 
+	protected Map<String, Character> boardMapForTest(){
+		return boardMap;
+	}
+
+	@Override
 	public String toString() {
 
 		// Create a StringBuffer to append to
@@ -144,6 +154,8 @@ public class Board {
 	}
 
 	public Boolean checkIfInBoard(int startingLetter, int cellNumber, Direction dir) {
+		
+		// Checks that the cell is in the board
 
 		if (dir == Direction.DOWN) {
 			if ((cellNumber) > 0 && (cellNumber) < numberOfRows) {
@@ -163,7 +175,9 @@ public class Board {
 
 		int holdStartingLetter = startingLetter;
 		int holdCellNumber = cellNumber;
-
+		
+		
+		//Checks for letters in each direction 
 		if (dir == Direction.DOWN) {
 			cellNumber--;
 			for (; board.checkIfInBoard(startingLetter, cellNumber, dir); cellNumber--) {
