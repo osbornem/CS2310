@@ -9,6 +9,7 @@ public class Game implements Controller {
 	protected Board board;
 	protected Rack rack;
 	private int totalScore = 0;
+	private boolean firstPlay = true;
 
 	ArrayList<String> words;
 
@@ -18,7 +19,7 @@ public class Game implements Controller {
 		new FileIO();
 		words = FileIO.getWords();
 	}
-	
+
 	protected void newBoard() {
 		Board.clearBoard();
 		board = Board.getBoard();
@@ -70,10 +71,10 @@ public class Game implements Controller {
 		char[] letterPositions = play.letterPositionsInRack().toCharArray();
 		// increments the cell number and the starting letter after
 		// checking the letter position
-		
-		String testValidity = checkValidity(play);
 
-		if (!testValidity.contains("INVALID")) {
+//		String testValidity = checkValidity(play);
+//
+//		if (!testValidity.contains("INVALID")) {
 
 			for (char c : letterPositions) {
 				board.replace(startingLetter, cellNumber, rack.pop(Integer.parseInt("" + c)));
@@ -83,8 +84,12 @@ public class Game implements Controller {
 					startingLetter++;
 				}
 			}
-		} else {
-			return testValidity;
+//		} else {
+//			return testValidity;
+//		}
+
+		if (firstPlay) {
+			firstPlay = false;
 		}
 
 		return gameState();
@@ -92,39 +97,85 @@ public class Game implements Controller {
 
 	@Override
 	public String calculateScore(Play play) {
+
+//		// Check if the word is valid
+//		checkValidity(play);
 		
-		// Check if the word is valid
-		checkValidity(play);
+		String cellLocation = play.cell();
+		// Gets the starting letter index
+		int startingLetter = board.getLetterIndex(cellLocation.charAt(0));
+		// gets the cell number
+		int cellNumber = Integer.parseInt(cellLocation.substring(1));
+		
+		
 		// Get letter positions
 		char[] letterPositions = play.letterPositionsInRack().toCharArray();
 		
 		int wordScore = 0;
-		
-		for(char c : letterPositions) {
-		int score;	
-		// Set the correct score for the letter
-		switch(c) {
-		case 'Z': score = 3; break;
-		case 'Y': score = 3; break;
-		case 'X': score = 3; break;
-		case 'Q': score = 3; break;
-		case 'N': score = 2; break;
-		case 'M': score = 2; break;
-		case 'K': score = 2; break;
-		case 'J': score = 2; break;
-		case 'G': score = 2; break;
-		case 'B': score = 2; break;
-		default : score = 1;		
+
+		for (int i = 0; i < letterPositions.length; i++) {
+			
+			char letter = rack.pull(Integer.parseInt("" + letterPositions[i] ));
+			
+			int score;
+			// Set the correct score for the letter
+			switch (letter) {
+			case 'Z':
+				score = 3;
+				break;
+			case 'Y':
+				score = 3;
+				break;
+			case 'X':
+				score = 3;
+				break;
+			case 'Q':
+				score = 3;
+				break;
+			case 'N':
+				score = 2;
+				break;
+			case 'M':
+				score = 2;
+				break;
+			case 'K':
+				score = 2;
+				break;
+			case 'J':
+				score = 2;
+				break;
+			case 'G':
+				score = 2;
+				break;
+			case 'B':
+				score = 2;
+				break;
+			default:
+				score = 1;
+			}
+			
+			if(play.dir() == Direction.DOWN) {
+					if(board.getCellValue("" + board.getLetter(startingLetter) + (cellNumber + i)) == '+') {
+						score += score;
+					}
+			} else {
+				if(board.getCellValue("" + board.getLetter(startingLetter + i) + (cellNumber)) == '+') {
+					score += score;
+				}
+			}
+
+			if (board.getCellValue(play.cell()) == '+') {
+				score = score * 2;
+			}
+
+			// Add the score to the letter
+			wordScore += score;
 		}
-		// Add the score to the letter
-		wordScore += score;
-		}
-		
+
 		// Update the total score
 		totalScore += wordScore;
-		
-		
-		return "" +  wordScore;
+
+		return "" + wordScore;
 	}
 
 	/**
@@ -147,14 +198,19 @@ public class Game implements Controller {
 	public String checkValidity(Play play) {
 		// Get the surrounding letters on the board
 		List<String> letters = getConnectingLetters(play);
-		// Get the possible words the letters could be 
+
+		if (letters.contains("invalidPosition")) {
+			return "WORD MUST BE PLACED NEXT TO ANOTHER WORD";
+		}
+
+		// Get the possible words the letters could be
 		List<String> possibleWords = checkPossibleWords(letters);
-		
+
 		// If there are no possible words
 		if (possibleWords.isEmpty()) {
 			return "INVALID FOR LETTERS:" + letters.toString().replace('[', ' ').replace(']', ' ');
 		}
-		
+
 		// Checks if the possible word is valid
 		for (String word : possibleWords) {
 			if (!checkIfWordIsValid(word, play)) {
@@ -169,8 +225,9 @@ public class Game implements Controller {
 
 	private List<String> checkPossibleWords(List<String> letters) {
 		List<String> possibleWords = new ArrayList<String>();
-		
-		// Go through New English words and check if it is possible with the given letters
+
+		// Go through New English words and check if it is possible with the given
+		// letters
 		for (String w : words) {
 
 			String[] wordStringArray = w.toUpperCase().split("");
@@ -207,6 +264,11 @@ public class Game implements Controller {
 
 		letters = board.checkSurroundingCells(startingLetter, cellNumber, dir);
 
+		if (letters.isEmpty() && firstPlay != true) {
+			letters.add("invalidPosition");
+			return letters;
+		}
+
 		if (play.letterPositionsInRack() != null) {
 			// creates a char[] array of letter
 			char[] letterPositions = play.letterPositionsInRack().toCharArray();
@@ -233,14 +295,14 @@ public class Game implements Controller {
 
 		List<String> letters;
 
-		// Assign notDir to the opposite direction of dir 
+		// Assign notDir to the opposite direction of dir
 		if (dir == Direction.DOWN) {
 			notDir = Direction.ACROSS;
 		} else {
 			notDir = Direction.DOWN;
 		}
 
-		// Check for letters surrounding the letter position 
+		// Check for letters surrounding the letter position
 		for (int i = 0; i < word.length(); i++) {
 			if (dir == Direction.DOWN) {
 				letters = board.checkSurroundingCells(startingLetter, cellNumber + i, notDir);

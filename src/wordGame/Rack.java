@@ -70,7 +70,7 @@ public class Rack {
 		}
 	}
 
-	public void setRack(String rackLetters) {
+	protected void setRack(String rackLetters) {
 
 		String[] rl = rackLetters.split("");
 

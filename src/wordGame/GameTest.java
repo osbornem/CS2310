@@ -99,27 +99,27 @@ public class GameTest {
 		Assert.assertEquals("INVALID FOR LETTERS: H, E, L, O, A ", g.checkValidity(new Play("B1", "DOWN", "12345")));
 	}
 	
-	@Test
-	public void testgetConnectingLetters() {
-		
-
-
-		r.setRack("HELLO");
-		//Assert.assertEquals("[HE]", g.checkValidity(new Play("B1", "ACROSS", "12")));
-		g.play(new Play("A1", "ACROSS", "12"));
-		Assert.assertEquals("VALID WORDS: HELLO ", g.checkValidity(new Play("C1", "ACROSS", "345")));
-		g.play(new Play("C1", "ACROSS", "345"));
-		r.setRack("HELLO");
-		
-		long startTime = (new Date()).getTime(); 
-		
-		Assert.assertEquals("INVALID FOR WORD: HELLO CLASHES WITH ANOTHER WORD ON BOARD", g.checkValidity(new Play("A2", "ACROSS", "12345")));
-		
-		long endTime = (new Date()).getTime(); 
-		long elapsedTime = endTime - startTime; 
-		System.out.println("Time to get connecting letters = " + elapsedTime);
-		
-	}
+//	@Test
+//	public void testgetConnectingLetters() {
+//		
+//
+//
+//		r.setRack("HELLO");
+//		//Assert.assertEquals("[HE]", g.checkValidity(new Play("B1", "ACROSS", "12")));
+//		g.play(new Play("A1", "ACROSS", "12"));
+//		Assert.assertEquals("VALID WORDS: HELLO ", g.checkValidity(new Play("C1", "ACROSS", "345")));
+//		g.play(new Play("C1", "ACROSS", "345"));
+//		r.setRack("HELLO");
+//		
+//		long startTime = (new Date()).getTime(); 
+//		
+//		Assert.assertEquals("INVALID FOR WORD: HELLO CLASHES WITH ANOTHER WORD ON BOARD", g.checkValidity(new Play("A2", "ACROSS", "12345")));
+//		
+//		long endTime = (new Date()).getTime(); 
+//		long elapsedTime = endTime - startTime; 
+//		System.out.println("Time to get connecting letters = " + elapsedTime);
+//		
+//	}
 	
 	@Test
 	public void reRackTime() {
@@ -152,7 +152,7 @@ public class GameTest {
 		
 		long startTime = (new Date()).getTime(); 
 		
-		g.calculateScore(new Play("A2", "ACROSS", "12345"));
+		Assert.assertEquals("6", g.calculateScore(new Play("A2", "ACROSS", "12345")));
 		
 		long endTime = (new Date()).getTime(); 
 		long elapsedTime = endTime - startTime; 
