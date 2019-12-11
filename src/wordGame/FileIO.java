@@ -15,9 +15,16 @@ import java.util.ArrayList;
  *
  */
 public class FileIO {
-
+	
+	// An ArrayList containing all New English Words
 	static ArrayList<String> words;
 
+	/**
+	 * 
+	 * Extract the words from the text document and add them to an ArrayList
+	 * 
+	 * @return An ArrayList containing all English Words
+	 */
 	public static ArrayList<String> getWords() {
 
 		words = new ArrayList<String>(70000);
@@ -26,11 +33,13 @@ public class FileIO {
 
 		BufferedReader br;
 		try {
+			// Read the file
 			br = new BufferedReader(new FileReader(file));
-			String st;
+			String s;
 			try {
-				while ((st = br.readLine()) != null) {
-					words.add(st);
+				// Add the words to the ArrayList
+				while ((s = br.readLine()) != null) {
+					words.add(s);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
