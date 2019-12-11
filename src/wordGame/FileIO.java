@@ -16,9 +16,6 @@ import java.util.ArrayList;
  */
 public class FileIO {
 	
-	// An ArrayList containing all New English Words
-	static ArrayList<String> words;
-
 	/**
 	 * 
 	 * Extract the words from the text document and add them to an ArrayList
@@ -27,7 +24,7 @@ public class FileIO {
 	 */
 	public static ArrayList<String> getWords() {
 
-		words = new ArrayList<String>(70000);
+		ArrayList<String> words = new ArrayList<String>(70000);
 
 		File file = new File("wordList.txt");
 
