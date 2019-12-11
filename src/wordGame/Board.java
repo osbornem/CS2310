@@ -220,6 +220,11 @@ public class Board {
 	 * @return The value of the cell
 	 */
 	public char getCellValue(String cell) {
+		
+		if(!boardMap.containsKey(cell)) {
+			return '!';
+		}
+		
 		return boardMap.get(cell);
 	}
 

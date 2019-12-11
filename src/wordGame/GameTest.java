@@ -3,7 +3,6 @@
  */
 package wordGame;
 
-
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,8 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 
-
-
 /**
  * @author Matthew Osborne
  *
@@ -23,7 +20,7 @@ public class GameTest {
 
 	Game g;
 	Rack r;
-	
+
 	// Number of columns in the grid
 	private int numberOfRows = 10;
 	// Number of rows in the grid
@@ -42,16 +39,16 @@ public class GameTest {
 	@Before
 	public void setUp() throws Exception {
 		// Create a new Game
-		 g = new Game();
-		
+		g = new Game();
+
 		r = Rack.getRack();
 	}
-	
+
 	@BeforeEach
 	private void newBoard() {
 		g.newBoard();
 	}
-	
+
 	private HashMap<String, Character> getTestBoard() {
 		HashMap<String, Character> testBoard = new HashMap<String, Character>((numberOfRows * numberOfColumns));
 
@@ -73,115 +70,124 @@ public class GameTest {
 //						System.out.println(alphabet[letter] + ((i % numberOfRows) + 1));
 			}
 		}
-		
+
 		return testBoard;
 	}
-	
+
 	/**
 	 * Test method for {@link wordGame.Game#checkValidity(wordGame.Play)}.
 	 */
 	@Test
 	public void testCheckValidity() {
 		r.setRack("HELLO");
-		
-		long startTime = (new Date()).getTime(); 
+
+		long startTime = (new Date()).getTime();
 		Assert.assertEquals("VALID WORDS: HELLO ", g.checkValidity(new Play("B1", "ACROSS", "12345")));
-		
-		long endTime = (new Date()).getTime(); 
-		long elapsedTime = endTime - startTime; 
+
+		long endTime = (new Date()).getTime();
+		long elapsedTime = endTime - startTime;
 		System.out.println("Time to check Validity = " + elapsedTime);
-		
+
 		Assert.assertEquals("VALID WORDS: HELLO ", g.checkValidity(new Play("B1", "DOWN", "12345")));
-		
-		
+
 		r.setRack("HELOA");
 		Assert.assertNotEquals("VALID WORDS: HELLO ", g.checkValidity(new Play("B1", "DOWN", "12345")));
 		Assert.assertEquals("INVALID FOR LETTERS: H, E, L, O, A ", g.checkValidity(new Play("B1", "DOWN", "12345")));
+
+		g.newBoard();
+
+		r.setRack("HELLO");
+		Assert.assertEquals(
+				"INVALID FOR WORD: HELLO CLASHES WITH ANOTHER WORD ON THE BOARD OR IS PLACED OFF OF THE BOARD",
+				g.checkValidity(new Play("A10", "DOWN", "12345")));
+
+		g.newBoard();
+
+		r.setRack("HELLO");
+		Assert.assertEquals(
+				"INVALID FOR WORD: HELLO CLASHES WITH ANOTHER WORD ON THE BOARD OR IS PLACED OFF OF THE BOARD",
+				g.checkValidity(new Play("J1", "ACROSS", "12345")));
+
 	}
-	
-//	@Test
-//	public void testgetConnectingLetters() {
-//		
-//
-//
-//		r.setRack("HELLO");
-//		//Assert.assertEquals("[HE]", g.checkValidity(new Play("B1", "ACROSS", "12")));
-//		g.play(new Play("A1", "ACROSS", "12"));
-//		Assert.assertEquals("VALID WORDS: HELLO ", g.checkValidity(new Play("C1", "ACROSS", "345")));
-//		g.play(new Play("C1", "ACROSS", "345"));
-//		r.setRack("HELLO");
-//		
-//		long startTime = (new Date()).getTime(); 
-//		
-//		Assert.assertEquals("INVALID FOR WORD: HELLO CLASHES WITH ANOTHER WORD ON BOARD", g.checkValidity(new Play("A2", "ACROSS", "12345")));
-//		
-//		long endTime = (new Date()).getTime(); 
-//		long elapsedTime = endTime - startTime; 
-//		System.out.println("Time to get connecting letters = " + elapsedTime);
-//		
-//	}
-	
+
+	@Test
+	public void testgetConnectingLetters() {
+
+		r.setRack("HELLO");
+		// Assert.assertEquals("[HE]", g.checkValidity(new Play("B1", "ACROSS", "12")));
+		g.play(new Play("A1", "ACROSS", "12"));
+		Assert.assertEquals("VALID WORDS: HELLO ", g.checkValidity(new Play("C1", "ACROSS", "345")));
+		g.play(new Play("C1", "ACROSS", "345"));
+
+		r.setRack("HELLO");
+		g.play(new Play("A2", "DOWN", "2345"));
+
+		r.setRack("ELFSW");
+		Assert.assertEquals(
+				"INVALID FOR WORD: ELF CLASHES WITH ANOTHER WORD ON THE BOARD OR IS PLACED OFF OF THE BOARD",
+				g.checkValidity(new Play("B2", "ACROSS", "23")));
+	}
+
 	@Test
 	public void reRackTime() {
-		
-		long startTime = (new Date()).getTime(); 
+
+		long startTime = (new Date()).getTime();
 
 		r.refill();
-		
-		long endTime = (new Date()).getTime(); 
-		long elapsedTime = endTime - startTime; 
+
+		long endTime = (new Date()).getTime();
+		long elapsedTime = endTime - startTime;
 		System.out.println("Time to re-rack = " + elapsedTime);
 	}
-	
+
 	@Test
 	public void gameStateTime() {
-		
-		long startTime = (new Date()).getTime(); 
+
+		long startTime = (new Date()).getTime();
 
 		g.gameState();
-		
-		long endTime = (new Date()).getTime(); 
-		long elapsedTime = endTime - startTime; 
+
+		long endTime = (new Date()).getTime();
+		long elapsedTime = endTime - startTime;
 		System.out.println("Time to print game state = " + elapsedTime);
 	}
-	
+
 	@Test
 	public void calculateScoreTime() {
-		
+
 		r.setRack("HELLO");
-		
-		long startTime = (new Date()).getTime(); 
-		
+
+		long startTime = (new Date()).getTime();
+
 		Assert.assertEquals("6", g.calculateScore(new Play("A2", "ACROSS", "12345")));
-		
-		long endTime = (new Date()).getTime(); 
-		long elapsedTime = endTime - startTime; 
+
+		long endTime = (new Date()).getTime();
+		long elapsedTime = endTime - startTime;
 		System.out.println("Time to calculate score = " + elapsedTime);
 	}
-	
-	
+
 	@Test
 	public void testPlay() {
-	
+
 		HashMap<String, Character> testBoard = getTestBoard();
-		
+
 		testBoard.put("A1", 'T');
 		testBoard.put("A2", 'E');
 		testBoard.put("A3", 'S');
 		testBoard.put("A4", 'T');
-		
+
 		r.setRack("TESTS");
-		
-		long startTime = (new Date()).getTime(); 
-		
+
+		long startTime = (new Date()).getTime();
+
 		g.play(new Play("A1", "DOWN", "1234"));
-		
-		long endTime = (new Date()).getTime(); 
-		long elapsedTime = endTime - startTime; 
+
+		long endTime = (new Date()).getTime();
+		long elapsedTime = endTime - startTime;
 		System.out.println("Time to play = " + elapsedTime);
-		
+
 		Assert.assertEquals(testBoard, Board.getBoard().boardMapForTest());
-		
+
 	}
 
 }

@@ -235,7 +235,7 @@ public class Game implements Controller {
 		for (String word : possibleWords) {
 			if (!checkIfWordIsValid(word, play)) {
 				return "INVALID FOR WORD: " + word.replace('[', ' ').replace(']', ' ')
-						+ " CLASHES WITH ANOTHER WORD ON BOARD";
+						+ " CLASHES WITH ANOTHER WORD ON THE BOARD OR IS PLACED OFF OF THE BOARD";
 			}
 		}
 
@@ -357,6 +357,10 @@ public class Game implements Controller {
 				letters = board.checkSurroundingCells(startingLetter, cellNumber + i, notDir);
 			} else {
 				letters = board.checkSurroundingCells(startingLetter + i, cellNumber, notDir);
+			}
+			
+			if(letters.contains("!")) {
+				return false;
 			}
 
 			letters.add("" + word.charAt(i));
