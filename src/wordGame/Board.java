@@ -14,6 +14,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 
+ *  Stores a Board object and creates a board Map.
+ * 
+ * @author Matthew Osborne  
+ *
+ */
+
 public class Board {
 
 	// A board object
@@ -58,12 +66,17 @@ public class Board {
 			} else {
 				// Put the Cells and corresponding values in the HashMap
 				boardMap.put(alphabet[letter] + ((i % numberOfRows) + 1), '.');
-//						System.out.println(alphabet[letter] + ((i % numberOfRows) + 1));
 
 			}
 		}
 	}
 
+	/**
+	 * 
+	 * Returns the Board object. If no Board class is found, make one.
+	 * 
+	 * @return The Board object
+	 */
 	public static Board getBoard() {
 		// If there isn't a board object make one
 		if (board == null) {
@@ -71,16 +84,31 @@ public class Board {
 		}
 		return board;
 	}
-	
-	public static void clearBoard() {
+
+	/**
+	 * Clear the Board object
+	 */
+	protected static void clearBoard() {
 		board = null;
 	}
-	
 
-	protected Map<String, Character> boardMapForTest(){
+	/**
+	 * 
+	 * Used for testing the board.
+	 * 
+	 * @return The Map used as the board
+	 */
+	protected Map<String, Character> boardMapForTest() {
 		return boardMap;
 	}
 
+	/**
+	 *
+	 * Turns the boardMap object into a string, which represents the board in an
+	 * understandable way for play.
+	 *
+	 * @return The formatted string version of the boardMap
+	 */
 	@Override
 	public String toString() {
 
@@ -124,37 +152,88 @@ public class Board {
 		return sb.toString();
 	}
 
+	/**
+	 * 
+	 * Replace a cell in the board with another value. Used for testing.
+	 * 
+	 * @param letter     The letter of the cell being indexed
+	 * @param cellNumber The number of the cell being indexed
+	 * @param value      The value to replace the value of the cell
+	 */
 	public void replace(int letter, int cellNumber, char value) {
 		// Replace the cell of the board with the given value
 		boardMap.replace("" + alphabet[letter] + cellNumber, value);
 	}
 
+	/**
+	 * 
+	 * Returns the cell back to its instantiated state. Used for testing.
+	 * 
+	 * @param letter     The letter of the cell being indexed
+	 * @param cellNumber The number of the cell being indexed
+	 */
 	public void resetCell(int letter, int cellNumber) {
+		// Put the Cells and corresponding values in the HashMap
 		if (Arrays.asList(specialCells).contains(alphabet[letter] + cellNumber) && setSpecialCells == true) {
 			boardMap.put(alphabet[letter] + cellNumber, '+');
 		} else {
-			// Put the Cells and corresponding values in the HashMap
 			boardMap.put(alphabet[letter] + cellNumber, '.');
 		}
-//				
 	}
 
+	/**
+	 * 
+	 * Returns the index of a letter passed to it.
+	 * 
+	 * @param c A letter
+	 * @return The index of the letter
+	 */
 	public int getLetterIndex(char c) {
 		// Return the int of the array that contains the character
 		return Arrays.asList(alphabet).indexOf("" + c);
 	}
 
+	/**
+	 * 
+	 * Returns the letter at an index of the array alphabet.
+	 * 
+	 * @param i The index variable of a letter
+	 * @return The letter at the index passed
+	 */
 	public String getLetter(int i) {
+
+		// Check if the index is in the array
+		if (i > alphabet.length) {
+			throw new IllegalArgumentException("Index " + i
+					+ " is greater than the number of letters in the array alphabet of " + alphabet.length);
+		}
+
 		// Return the letter of the int location
 		return alphabet[i];
 	}
 
+	/**
+	 * 
+	 * Returns the value of the cell.
+	 * 
+	 * @param cell The cell index of the object being returned
+	 * @return The value of the cell
+	 */
 	public char getCellValue(String cell) {
 		return boardMap.get(cell);
 	}
 
+	/**
+	 * 
+	 * Checks if the specified cell is in the board.
+	 * 
+	 * @param startingLetter The letter of the cell being indexed
+	 * @param cellNumber     The number of the cell being indexed
+	 * @param dir            The direction the play is going
+	 * @return A boolean value of if the cell is in the board
+	 */
 	public Boolean checkIfInBoard(int startingLetter, int cellNumber, Direction dir) {
-		
+
 		// Checks that the cell is in the board
 
 		if (dir == Direction.DOWN) {
@@ -169,21 +248,29 @@ public class Board {
 		return false;
 	}
 
+	/**
+	 * 
+	 * 	Searches for other letters on the board which are connected to the ones being played.
+	 * 
+	 * @param startingLetter The letter of the cell being indexed
+	 * @param cellNumber     The number of the cell being indexed
+	 * @param dir            The direction the play is going
+	 * @return The letters found in the cells that have been searched
+	 */
 	public List<String> checkSurroundingCells(int startingLetter, int cellNumber, Direction dir) {
 
 		List<String> letters = new ArrayList<String>();
 
 		int holdStartingLetter = startingLetter;
 		int holdCellNumber = cellNumber;
-		
-		
-		//Checks for letters in each direction 
+
+		// Checks for letters in each direction
 		if (dir == Direction.DOWN) {
 			cellNumber--;
 			for (; board.checkIfInBoard(startingLetter, cellNumber, dir); cellNumber--) {
 				if (getCellValue("" + getLetter(startingLetter) + cellNumber) == '.'
 						|| getCellValue("" + getLetter(startingLetter) + cellNumber) == '+') {
-					break; 
+					break;
 				} else {
 					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
 				}
@@ -193,7 +280,7 @@ public class Board {
 			for (; checkIfInBoard(startingLetter, cellNumber, dir); cellNumber++) {
 				if (getCellValue("" + getLetter(startingLetter) + cellNumber) == '.'
 						|| getCellValue("" + getLetter(startingLetter) + cellNumber) == '+') {
-					break; 
+					break;
 				} else {
 					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
 				}
@@ -203,7 +290,7 @@ public class Board {
 			for (; checkIfInBoard(startingLetter, cellNumber, dir); startingLetter++) {
 				if (getCellValue("" + getLetter(startingLetter) + cellNumber) == '.'
 						|| getCellValue("" + getLetter(startingLetter) + cellNumber) == '+') {
-					break; 
+					break;
 				} else {
 					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
 				}
@@ -213,7 +300,7 @@ public class Board {
 			for (; board.checkIfInBoard(startingLetter, cellNumber, dir); startingLetter--) {
 				if (getCellValue("" + getLetter(startingLetter) + cellNumber) == '.'
 						|| getCellValue("" + getLetter(startingLetter) + cellNumber) == '+') {
-					break; 
+					break;
 				} else {
 					letters.add("" + getCellValue("" + getLetter(startingLetter) + cellNumber));
 				}
