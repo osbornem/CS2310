@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author Matthew Osborne, Akeel Saleem, Lewis Miller
+ *
+ */
 public class Game implements Controller {
 
 	protected Board board;
 	protected Rack rack;
 	private int totalScore = 0;
 	private boolean firstPlay = true;
-
-	ArrayList<String> words;
+	private List<String> words;
 
 	public Game() {
 		board = Board.getBoard();
@@ -37,27 +40,42 @@ public class Game implements Controller {
 		new TUI(g);
 	}
 
+	/**
+	 * Refill the tile rack with randomly selected tiles.
+	 * 
+	 * @return the state of the tile rack
+	 */
 	@Override
 	public String refillRack() {
-
 		rack.refill();
-
 		return rack.toString();
-
 	}
 
 	/**
-	 * Returns a string version of the board
+	 * Return the current state of the game board and the contents of the player's
+	 * tile rack as a String object.
+	 * 
+	 * @return the current state of the game board and the contents of the player's
+	 *         tile rack as a String object
 	 */
 	@Override
 	public String gameState() {
-		return board.toString();
+		return rack.toString() + "\n \n" + board.toString();
 	}
 
-	/*
-	 * Play method that creates a starting letter, cell number and direction and
-	 * changes the letter position to a new position
+	/**
+	 * Place some tiles horizontally or vertically on a sequence of unoccupied cells
+	 * in the game board.
 	 * 
+	 * The game engine will return the state of the game board after the tiles have
+	 * been placed on the board as a String object.
+	 * 
+	 * @param play information about where to place which tile in the form of
+	 *             STARTING_CELL; DIRECTION; LETTER_POSITIONS_IN_RACK, e.g. B3,
+	 *             DOWN, 513
+	 * 
+	 * @return the state of the game board after the tiles have been placed on the
+	 *         board as a String object
 	 */
 	@Override
 	public String play(Play play) {
@@ -71,23 +89,16 @@ public class Game implements Controller {
 		char[] letterPositions = play.letterPositionsInRack().toCharArray();
 		// increments the cell number and the starting letter after
 		// checking the letter position
-
-//		String testValidity = checkValidity(play);
-//
-//		if (!testValidity.contains("INVALID")) {
-
-			for (char c : letterPositions) {
-				board.replace(startingLetter, cellNumber, rack.pop(Integer.parseInt("" + c)));
-				if (dir == Direction.DOWN) {
-					cellNumber++;
-				} else {
-					startingLetter++;
-				}
+		for (char c : letterPositions) {
+			board.replace(startingLetter, cellNumber, rack.pop(Integer.parseInt("" + c)));
+			if (dir == Direction.DOWN) {
+				cellNumber++;
+			} else {
+				startingLetter++;
 			}
-//		} else {
-//			return testValidity;
-//		}
+		}
 
+		// Sets the first play to false
 		if (firstPlay) {
 			firstPlay = false;
 		}
@@ -95,28 +106,37 @@ public class Game implements Controller {
 		return gameState();
 	}
 
+	/**
+	 * Calculate the points for the tiles placed on the game board in a intended
+	 * play (i.e. move).
+	 * 
+	 * @param play information about where to place which tile in the form of
+	 *             STARTING_CELL; DIRECTION; LETTER_POSITIONS_IN_RACK, e.g. B3,
+	 *             DOWN, 513
+	 * 
+	 * @return a message showing the points to be scored as a String object
+	 */
 	@Override
 	public String calculateScore(Play play) {
 
 //		// Check if the word is valid
 //		checkValidity(play);
-		
+
 		String cellLocation = play.cell();
 		// Gets the starting letter index
 		int startingLetter = board.getLetterIndex(cellLocation.charAt(0));
 		// gets the cell number
 		int cellNumber = Integer.parseInt(cellLocation.substring(1));
-		
-		
 		// Get letter positions
 		char[] letterPositions = play.letterPositionsInRack().toCharArray();
-		
+
 		int wordScore = 0;
 
+		// Iterate over the letters played
 		for (int i = 0; i < letterPositions.length; i++) {
-			
-			char letter = rack.pull(Integer.parseInt("" + letterPositions[i] ));
-			
+
+			char letter = rack.pull(Integer.parseInt("" + letterPositions[i]));
+
 			int score;
 			// Set the correct score for the letter
 			switch (letter) {
@@ -153,13 +173,13 @@ public class Game implements Controller {
 			default:
 				score = 1;
 			}
-			
-			if(play.dir() == Direction.DOWN) {
-					if(board.getCellValue("" + board.getLetter(startingLetter) + (cellNumber + i)) == '+') {
-						score += score;
-					}
+
+			if (play.dir() == Direction.DOWN) {
+				if (board.getCellValue("" + board.getLetter(startingLetter) + (cellNumber + i)) == '+') {
+					score += score;
+				}
 			} else {
-				if(board.getCellValue("" + board.getLetter(startingLetter + i) + (cellNumber)) == '+') {
+				if (board.getCellValue("" + board.getLetter(startingLetter + i) + (cellNumber)) == '+') {
 					score += score;
 				}
 			}
@@ -196,8 +216,8 @@ public class Game implements Controller {
 	 */
 	@Override
 	public String checkValidity(Play play) {
-		// Get the surrounding letters on the board
-		List<String> letters = getConnectingLetters(play);
+		// Get the surrounding letters on the board and from the rack
+		List<String> letters = getLetters(play);
 
 		if (letters.contains("invalidPosition")) {
 			return "WORD MUST BE PLACED NEXT TO ANOTHER WORD";
@@ -223,6 +243,15 @@ public class Game implements Controller {
 
 	}
 
+	/**
+	 * 
+	 * Find the letters that can be made from the New English words using the
+	 * letters given.
+	 * 
+	 * @param Letters The letters used in the play and from the board
+	 * 
+	 * @return Possible words that can be made from the letters
+	 */
 	private List<String> checkPossibleWords(List<String> letters) {
 		List<String> possibleWords = new ArrayList<String>();
 
@@ -250,7 +279,14 @@ public class Game implements Controller {
 		return possibleWords;
 	}
 
-	private List<String> getConnectingLetters(Play play) {
+	/**
+	 * 
+	 * Get the letters from the board that connect to the Play being done.
+	 * 
+	 * @param play The current Play
+	 * @return The connecting letters on the board
+	 */
+	private List<String> getLetters(Play play) {
 
 		String cellLocation = play.cell();
 		// Gets the starting letter index
@@ -262,13 +298,17 @@ public class Game implements Controller {
 
 		List<String> letters = new ArrayList<String>();
 
+		// Gets the connecting letters
 		letters = board.checkSurroundingCells(startingLetter, cellNumber, dir);
 
+		// If it is not the first play and there are no connecting letters return
+		// invalid
 		if (letters.isEmpty() && firstPlay != true) {
 			letters.add("invalidPosition");
 			return letters;
 		}
 
+		// Add the letters to the letters from the rack
 		if (play.letterPositionsInRack() != null) {
 			// creates a char[] array of letter
 			char[] letterPositions = play.letterPositionsInRack().toCharArray();
@@ -280,6 +320,15 @@ public class Game implements Controller {
 		return letters;
 	}
 
+	/**
+	 * 
+	 * Checks if a word is valid by checking if it clashes with any other words on
+	 * the board
+	 * 
+	 * @param word The word being played
+	 * @param play The current Play
+	 * @return A boolean value of if the word can be played
+	 */
 	private Boolean checkIfWordIsValid(String word, Play play) {
 
 		// Gets the direction
